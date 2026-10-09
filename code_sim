@@ -1,0 +1,181 @@
+from math import *
+from random import *
+from turtle import *
+
+
+
+def surg_availability():
+    surgeons=["Fotis","George","Nikos","Akis","Maria","Anastasis","Dimitris","Vasiliki"]
+    avail=[]
+    for surgeon in surgeons:
+        status=choice(["Available","Unavailable"])
+        avail.append([surgeon,status])
+    count=0
+    for row in avail:
+        if row[1]=="Available":
+            count=count+1
+    return count
+
+
+def rob_Rarm_movement(R_angle,min_angle,max_angle):
+    if(R_angle>max_angle or R_angle<min_angle):
+        print("Dangerous value of angle.")
+        return False
+    else:
+        print("The value of angle is safe.")
+        return True
+
+
+
+def rob_Larm_movement(L_angle,min_angle,max_angle):
+    if(L_angle>max_angle or L_angle<min_angle):
+        print("Dangerous value of angle.")
+        return False
+    else:
+        print("The value of angle is safe.")
+        return True
+
+
+
+def rob_camera_movement(C_angle,min_angle,max_angle):
+    if(C_angle>max_angle or C_angle<min_angle):
+        print("Camera cant reach this angle.")
+        return False
+    else:
+        print("Camera successfully rotated.")
+        return True
+
+
+
+class RoboticPart:
+
+    def __init__(self,angle,is_func,temp):
+        self.angle=angle
+        self.is_func=is_func
+        self.temp=temp
+
+    def check_infos(self):
+        if not((self.angle>0 and self.angle<90)):
+            print("Angle problem")
+            return False
+        elif not(self.is_func==True):
+            print("This robotic part is not functional")
+            return False
+        elif not(self.temp>0 and self.temp<=50):
+            print("The temperature of this robotic arm is dangerous")
+            return False
+        else:
+            print("We can proceed to the next part")
+            return True
+
+
+
+class SurgCamera:
+    human_organs={"heart":0.25,"lungs":0.30,"brain":0.80,"liver":0.40}
+
+    def __init__(self,is_on,I01,I02,b_level,fps,organ):    # i1 kai i2 gia to contrast
+        self.is_on=is_on
+        self.I01=I01
+        self.I02=I02
+        self.b_level=b_level
+        self.fps=fps
+        self.organ=organ
+
+
+    def check_cam_infos(self):
+        if not(self.is_on==True):
+            print("Camera is not On")
+            return False
+        
+        if (self.I01>0 and self.I02>0):    
+            for organ in self.human_organs:
+                if self.organ in self.human_organs:
+
+                    I1=self.I01*exp(self.human_organs[self.organ])
+                    I2=self.I02*exp(self.human_organs[self.organ])
+
+                    Contrast=(abs(I1-I2)/I1)
+
+                    if not(Contrast>0 and Contrast<=0.4375):
+                        print("Dangerous value of contrast")
+                        return False
+                    
+                else:
+                    print("Organ not found")
+                    return False
+        else:
+            print("Wrong radiation intensity values")
+            return False
+
+        if not(self.b_level>50):
+            print("Battery levels too low")
+            return False
+        if not(self.fps>180):
+            print("Fps too low")
+            return False
+        return True
+        
+#main
+
+
+right_arm=RoboticPart(uniform(0,180),choice([True,False]),uniform(0,100))
+x=right_arm.check_infos()
+
+
+left_arm=RoboticPart(uniform(0,180),choice([True,False]),uniform(0,100))
+x1=left_arm.check_infos()
+
+
+#an bei simenei oti oi times einai egires apo ta duo arms
+if(x==True and x1==True):
+    camera_1=SurgCamera(choice([True,False]),uniform(0,100),uniform(0,100),uniform(0,100),randint(0,360),"lungs")
+    cv=camera_1.check_cam_infos() # a1 = t/f einai ola sosta T allios F
+    if cv==True:
+        sa=surg_availability() #checking available surgeons
+        if(sa)>=3:
+            print("There are available surgeons\n")
+            print("Now we can start the process...\n")
+
+            print("1.Move right robotic arm\n")
+            print("2.Move left robotic arm\n")
+            print("3.Move camera\n")
+
+            c_number=int(input())
+
+            while (c_number==1 or c_number==2 or c_number==3):
+
+
+                if c_number==1:
+
+                    max_angle=90 #min and max angle of Right arm movement
+                    min_angle=0
+                    R_angle=float(input("Please proceed the angle of the right robotic arm: "))
+                    rob_Rarm_movement(R_angle,min_angle,max_angle)
+                
+                elif c_number==2:
+
+                    max_angle=180
+                    min_angle=91
+                    L_angle=float(input("Please proceed the angle of the left robotic arm: "))
+                    rob_Larm_movement(L_angle,min_angle,max_angle)
+                
+                elif c_number==3:
+
+                    max_angle=240
+                    min_angle=-60
+                    C_angle=float(input("Please proceed the angle of the camera: "))
+                    rob_camera_movement(C_angle,min_angle,max_angle)
+                
+                print("1.Move right robotic arm\n")
+                print("2.Move left robotic arm\n")
+                print("3.Move camera\n")
+                print("4.Exit")
+
+                c_number=int(input())
+
+                if c_number==4:
+                    break
+            print("The surgery successfully finished")
+
+        else:
+            print("Unfortunatly there are not available surgeons at this moment")
